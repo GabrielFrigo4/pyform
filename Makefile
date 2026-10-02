@@ -10,7 +10,7 @@ MAKEFLAGS += --no-print-directory -s
 APP        = pyform
 VERSION   != grep '^version = ' pyproject.toml | cut -d '"' -f 2 2> "/dev/null" || echo 0.1.0
 
-.PHONY: all help run dev install test format lint hooks clean ci
+.PHONY: all help run dev install test format prettier ruff-format lint hooks clean ci
 
 all: help
 
@@ -31,7 +31,9 @@ help:
 	sec "Qualidade, Testes & CI:"; \
 	cmd "test"           "Executa a suíte de testes unitários defensivos"; \
 	cmd "lint"           "Executa análise estática de código com Ruff"; \
-	cmd "format"         "Formata Markdown com Prettier e código com Ruff"; \
+	cmd "format"         "Formata Markdown (Prettier) e código Python (Ruff)"; \
+	cmd "prettier"       "Formata documentações Markdown com Prettier"; \
+	cmd "ruff-format"    "Formata código Python com Ruff"; \
 	cmd "ci"             "Executa pipeline completa de quality gates locais"; \
 	sec "Governança & Manutenção:"; \
 	cmd "hooks"          "Configura e valida os ganchos do Git (.githooks)"; \
@@ -83,17 +85,22 @@ lint:
 	fi
 	echo "✅ Validação estática aprovada!"
 
-format:
-	echo "🎨 Formatando arquivos do repositório..."
+format: prettier ruff-format
+	echo "✅ Formatação concluída!"
+
+prettier:
+	echo "🎨 Formatando documentações Markdown com Prettier..."
 	if command -v npx > "/dev/null" 2>&1; then \
 		npx prettier --write "**/*.md" 2> "/dev/null" || true; \
 	elif command -v prettier > "/dev/null" 2>&1; then \
 		prettier --write "**/*.md" 2> "/dev/null" || true; \
 	fi
+
+ruff-format:
+	echo "🎨 Formatando código Python com Ruff..."
 	if command -v ruff > "/dev/null" 2>&1; then \
 		ruff format . 2> "/dev/null" || true; \
 	fi
-	echo "✅ Formatação concluída!"
 
 hooks:
 	echo "🪝 Configurando ganchos Git (.githooks)..."

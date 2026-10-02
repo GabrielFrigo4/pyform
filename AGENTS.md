@@ -18,7 +18,7 @@ O **PyForm** é uma aplicação gráfica para renderização de formas geométri
 ## ⚠️ Regras Críticas para Agentes de IA
 
 1. **Hermetismo de Produção & Invariante `rm -rf .agents`:** Repositório 100% autônomo. Zero acoplamento de código de produção a `.agents/` ou `skills/` (a aplicação funciona plenamente se `.agents/` for sumariamente deletado).
-2. **Zero Comentários Narrativos:** É terminantemente proibido inserir comentários óbvios narrando código executável. Blocos lógicos devem ser separados por linhas em branco e expressar sua intenção via código autoexplicativo.
+2. **Zero Comentários Narrativos:** Evite comentários óbvios narrando código executável. Blocos lógicos devem ser separados por linhas em branco e expressar sua intenção via código autoexplicativo.
 3. **Tipagem Estática & PEP 8:** Funções e métodos devem declarar type hints (`typing`) estritos e passar na validação do Ruff sem advertências.
 4. **Nomenclatura Semântica:** Proibidas abreviações crípticas de uma única letra para variáveis de escopo amplo. Nomes devem ser legíveis e explicativos.
 5. **Invariante Out-of-the-Box (Permissões Canônicas):** O projeto deve funcionar imediatamente após um simples `git clone`. Modos octais no Git Index DEVEM ser rigorosamente `0755` para executáveis/scripts/hooks e `0644` para código, configurações e documentação.

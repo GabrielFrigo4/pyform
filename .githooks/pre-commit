@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+set -e
+
+echo "Running pre-commit checks..."
+
+if ! git diff --check --cached; then
+	echo "❌ [pre-commit] Whitespace or EOF errors detected." >&2
+	exit 1
+fi
+
+if command -v npx > "/dev/null" 2>&1; then
+	_md_files=$(git diff --cached --name-only --diff-filter=ACM | grep '\.md$' || true)
+	if [ -n "${_md_files}" ]; then
+		echo "Checking markdown formatting..."
+		npx prettier --check ${_md_files}
+	fi
+fi
+
+if command -v python3 > "/dev/null" 2>&1; then
+	echo "Running unit tests..."
+	python3 -m unittest discover tests > "/dev/null" 2>&1 || {
+		echo "❌ [pre-commit] Unit tests failed." >&2
+		exit 1
+	}
+fi
+
+echo "✅ [pre-commit] Checks passed!"
+exit 0

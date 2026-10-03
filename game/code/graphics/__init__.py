@@ -1,4 +1,5 @@
 from .diagnostics import log_hardware_info
-from .shader import ShaderProgram
+from .mesh import TriangleMesh
+from .shader import ShaderProgram, load_shader_source
 
-__all__ = ["ShaderProgram", "log_hardware_info"]
+__all__ = ["ShaderProgram", "TriangleMesh", "load_shader_source", "log_hardware_info"]

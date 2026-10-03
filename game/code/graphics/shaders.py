@@ -1,5 +1,5 @@
 VERTEX_SHADER = """
-#version 330 core
+#version 420 core
 
 in vec3 in_position;
 
@@ -9,7 +9,7 @@ void main() {
 """
 
 FRAGMENT_SHADER = """
-#version 330 core
+#version 420 core
 
 out vec4 frag_color;
 

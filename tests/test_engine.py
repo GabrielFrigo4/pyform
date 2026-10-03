@@ -7,12 +7,11 @@ from main import parse_args
 
 class TestPyForm(unittest.TestCase):
     def test_version_present(self) -> None:
-        self.assertTrue(isinstance(__version__, str))
-        self.assertTrue(len(__version__) > 0)
+        self.assertEqual(__version__, "0.1.0.dev0")
 
     def test_shaders_defined(self) -> None:
-        self.assertIn("#version 330 core", VERTEX_SHADER)
-        self.assertIn("#version 330 core", FRAGMENT_SHADER)
+        self.assertIn("#version 420 core", VERTEX_SHADER)
+        self.assertIn("#version 420 core", FRAGMENT_SHADER)
         self.assertIn("in_position", VERTEX_SHADER)
         self.assertIn("frag_color", FRAGMENT_SHADER)
 

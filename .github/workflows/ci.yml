@@ -1,34 +1,40 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
 
 jobs:
-  test:
-    name: Unit Tests & Code Quality
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    test:
+        name: Lint, Quality & Unit Tests
+        runs-on: ubuntu-latest
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
 
-      - name: Install Astral uv
-        uses: astral-sh/setup-uv@v3
-        with:
-          version: "latest"
+            - name: Install Astral uv
+              uses: astral-sh/setup-uv@v5
+              with:
+                  version: "latest"
+                  enable-cache: true
 
-      - name: Validate Python Syntax
-        run: python3 -m py_compile main.py pyform/*.py tests/*.py
+            - name: Set up Python
+              run: uv python install 3.12
 
-      - name: Run Unit Tests
-        run: python3 -m unittest discover tests
+            - name: Install Dependencies
+              run: uv sync --all-groups
 
-      - name: Prettier Formatting Check
-        run: npx prettier --check "**/*.md"
+            - name: Check Python Code Formatting (Ruff)
+              run: uv run ruff format --check .
+
+            - name: Lint Python Code (Ruff)
+              run: uv run ruff check .
+
+            - name: Run Unit Tests
+              run: uv run python -m unittest discover -s tests -p "test_*.py"
+
+            - name: Prettier Formatting Check
+              run: npx prettier --check "**/*.md"

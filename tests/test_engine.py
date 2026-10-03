@@ -2,8 +2,11 @@ import re
 import unittest
 
 from game import __version__
-from game.code.graphics.shaders import FRAGMENT_SHADER, VERTEX_SHADER
+from game.code.graphics.shader import load_shader_source
 from main import parse_args
+
+VERTEX_SHADER = load_shader_source("default.vert")
+FRAGMENT_SHADER = load_shader_source("default.frag")
 
 
 def extract_glsl_interface(glsl_source: str) -> dict[str, dict[str, str]]:

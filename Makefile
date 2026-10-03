@@ -18,7 +18,7 @@ all: help
 ### HELP & DOCUMENTATION
 ### ================================
 help:
-	_e=$$'\e'; \
+	_e=$$(printf '\033'); \
 	cmd() { printf "    $${_e}[36mmake %-22s$${_e}[0m %s\n" "$$1" "$$2"; }; \
 	sec() { printf "\n  $${_e}[1;33m%s$${_e}[0m\n" "$$1"; }; \
 	sub() { printf "  $${_e}[1;34m  ── %s ──$${_e}[0m\n" "$$1"; }; \
@@ -33,7 +33,7 @@ help:
 	cmd "lint"           "Executa análise estática de código com Ruff"; \
 	cmd "format"         "Formata Markdown (Prettier) e código Python (Ruff)"; \
 	cmd "prettier"       "Formata documentações Markdown com Prettier"; \
-	cmd "ruff-format"    "Formata código Python com Ruff"; \
+	cmd "ruff-format"    "Formata código Python com Ruff (organiza imports)"; \
 	cmd "ci"             "Executa pipeline completa de quality gates locais"; \
 	sec "Governança & Manutenção:"; \
 	cmd "hooks"          "Configura e valida os ganchos do Git (.githooks)"; \
@@ -71,17 +71,21 @@ install:
 ### ================================
 test:
 	echo "🧪 Executando suíte de testes unitários..."
-	python3 -m unittest discover tests
+	if command -v uv > "/dev/null" 2>&1; then \
+		uv run python3 -m unittest discover tests; \
+	else \
+		python3 -m unittest discover tests; \
+	fi
 	echo "✅ Testes concluídos com sucesso!"
 
 lint:
 	echo "🔍 Analisando sintaxe e estilo de código..."
-	if command -v ruff > "/dev/null" 2>&1; then \
+	if command -v uv > "/dev/null" 2>&1; then \
+		uv run ruff check . 2> "/dev/null" || uv run python3 -m compileall -q main.py game tests; \
+	elif command -v ruff > "/dev/null" 2>&1; then \
 		ruff check .; \
-	elif command -v uv > "/dev/null" 2>&1; then \
-		uv run ruff check . 2> "/dev/null" || python3 -m py_compile main.py pyform/*.py tests/*.py; \
 	else \
-		python3 -m py_compile main.py pyform/*.py tests/*.py; \
+		python3 -m compileall -q main.py game tests; \
 	fi
 	echo "✅ Validação estática aprovada!"
 
@@ -98,7 +102,11 @@ prettier:
 
 ruff-format:
 	echo "🎨 Formatando código Python com Ruff..."
-	if command -v ruff > "/dev/null" 2>&1; then \
+	if command -v uv > "/dev/null" 2>&1; then \
+		uv run ruff check --fix --select I . 2> "/dev/null" || true; \
+		uv run ruff format . 2> "/dev/null" || true; \
+	elif command -v ruff > "/dev/null" 2>&1; then \
+		ruff check --fix --select I . 2> "/dev/null" || true; \
 		ruff format . 2> "/dev/null" || true; \
 	fi
 
@@ -117,5 +125,7 @@ clean:
 	echo "✅ Limpeza concluída!"
 
 ci: test lint
-	sh .githooks/pre-commit
+	if [ -f .githooks/pre-commit ]; then \
+		sh .githooks/pre-commit; \
+	fi
 	echo "🚀 PyForm pronto para produção e commits!"

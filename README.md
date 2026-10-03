@@ -1,101 +1,93 @@
-# PyForm
+# PyForm Graphics Engine
 
-> Motor gráfico e ambiente de exploração procedural em Python moderno, ModernGL (OpenGL 3.3+ Core Profile) e GLFW.
+> Motor gráfico experimental e laboratório de computação gráfica procedural construído em Python, ModernGL (OpenGL 4.2 Core) e GLFW.
 
-[![Python](https://img.shields.io/badge/Python-3.12+-blue?logo=python&logoColor=white)](https://www.python.org/)
-[![ModernGL](https://img.shields.io/badge/OpenGL-ModernGL_5.10-red?logo=opengl&logoColor=white)](https://moderngl.readthedocs.io/)
-[![GLFW](https://img.shields.io/badge/Window-GLFW_3-orange)](https://www.glfw.org/)
-[![Roadmap](https://img.shields.io/badge/Roadmap-TODO.md-teal)](TODO.md)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Code Style](https://img.shields.io/badge/Code_Style-Prettier_%26_Ruff-black)](https://prettier.io/)
+O **PyForm** nasceu como uma extensão prática e aprofundada dos conceitos explorados na disciplina de Computação Gráfica. Em vez de se limitar aos exercícios convencionais ou à linha de base acadêmica (OpenGL 4.0), o projeto funciona como uma bancada de testes para experimentação de baixo nível com shaders, álgebra linear gráfica, geração procedural e arquitetura de engines — convergindo no desenvolvimento de um mini-game modular.
 
 ---
 
-## Visao Geral
+## Destaques & Objetivos
 
-O **PyForm** é um ambiente para renderização em tempo real de formas geométricas analíticas, funções de distância assinada (SDF) e animações temporais contínuas em GPU. O projeto prioriza inicialização instantânea, arquitetura limpa sem bloat de frameworks pesados e código defensivo em Python 3.12+.
+- **Pipeline Gráfico Moderno:** Contexto focado em OpenGL 4.2 Core Profile via ModernGL, dispensando pipelines legados de função fixa.
+- **Laboratório de Shaders & Compilação:** Suporte e testes com GLSL 4.20, binários SPIR-V (`GL_ARB_gl_spirv`), Compute Shaders (`GL_ARB_compute_shader`) e futuras integrações com outras linguagens de shading (HLSL, Slang).
+- **Matemática Gráfica Vetorizada:** Transformações afins, projeções e matrizes de câmera gerenciadas com PyGLM e buffers estruturados com NumPy.
+- **Áudio Nativo Desacoplado:** Reprodução de trilhas e efeitos via `miniaudio` (bindings C leves, sem dependência do runtime do Pygame).
+- **Tooling de Automação:** Gerenciamento de dependências com `uv` e esteira de qualidade padronizada via Makefile `.POSIX` e Ruff.
 
-```mermaid
-flowchart LR
-    A["main.py (CLI Entry Point)"] --> B["PyFormApp (Engine Coordinator)"]
-    B --> C["Window (GLFW Context & Events)"]
-    B --> D["Renderer (ModernGL Pipeline)"]
-    D --> E["Shaders (GLSL 330 Core)"]
-    D --> F["GPU (OpenGL Core Profile)"]
+---
+
+## Arquitetura do Repositório
+
+```text
+.
+├── game/
+│   ├── assets/
+│   └── code/
+│       ├── audio/
+│       ├── core/
+│       ├── graphics/
+│       └── scenes/
+├── tests/
+├── Makefile
+├── pyproject.toml
+└── main.py
 ```
 
 ---
 
-## Funcionalidades Principais
+## Pré-requisitos do Sistema
 
-- **Pipeline ModernGL Puro:** Alocação direta de VBOs e VAOs com renderização em modo Core Profile sem dependências obsoletas de OpenGL imediato.
-- **Janela e Contexto GLFW:** Gerenciamento nativo de janela, sincronização vertical (_v-sync_ a 60 FPS) e tratamento assíncrono de eventos e redimensionamento.
-- **Shaders Procedurais:** Shaders GLSL com correção de aspecto de tela, cálculo analítico de distância e gradientes suaves de cor.
-- **Gerenciamento Astral `uv`:** Inicialização e execução em frações de segundo com isolamento de ambiente virtual determinístico.
+Bibliotecas de desenvolvimento OpenGL (`libGL.so` e `libEGL.so`) necessárias no sistema operacional:
 
----
+### Fedora / RHEL
 
-## Requisitos do Sistema
-
-- **Python:** 3.12 ou superior
-- **Astral `uv`:** (Recomendado) ou `pip` tradicional
-- **GPU / Drivers:** Suporte a OpenGL 3.3 Core Profile ou superior
-
----
-
-## Instalacao e Execucao
-
-### 1. Clonagem e Configuracao dos Ganchos
-
-```sh
-git clone https://github.com/GabrielFrigo4/pyform.git
-cd pyform
-make hooks
+```bash
+sudo dnf install -y libglvnd-devel mesa-libGL-devel mesa-libEGL-devel
 ```
 
-### 2. Sincronizacao de Dependencias
+### Debian / Ubuntu
+
+```bash
+sudo apt update && sudo apt install -y libgl-dev libegl-dev
+```
+
+### Arch Linux / Manjaro
+
+```bash
+sudo pacman -S --needed libglvnd mesa
+```
+
+### FreeBSD
 
 ```sh
+sudo pkg install -y libglvnd mesa-libs
+```
+
+---
+
+## Instalação e Execução
+
+### Clonar e Instalar Dependências
+
+```bash
+git clone https://github.com/GabrielFrigo4/pyform
+cd PyForm
 make install
 ```
 
-_(Ou diretamente via `uv sync`)_
+### Comandos Disponíveis
 
-### 3. Execucao
-
-```sh
-# Execução padrão (960x540)
-make run
-
-# Execução em alta resolução para desenvolvimento (1280x720)
-make dev
-
-# Execução customizada via CLI
-python3 main.py --width 1920 --height 1080 --title "PyForm Full HD"
-```
-
-### Controles
-
-- **ESC:** Encerra a aplicação de forma graciosa liberando os contextos de GPU.
+| Comando       | Descrição                                                |
+| ------------- | -------------------------------------------------------- |
+| `make run`    | Executa a engine na resolução padrão (960×540)           |
+| `make dev`    | Executa em resolução de desenvolvimento (1280×720)       |
+| `make test`   | Roda a suíte de testes unitários                         |
+| `make lint`   | Executa análise estática com Ruff                        |
+| `make format` | Aplica formatação automática em Python (Ruff) e Markdown |
+| `make clean`  | Remove caches temporários (`__pycache__`, `.ruff_cache`) |
 
 ---
 
-## Comandos do Makefile
+## Licença
 
-| Comando        | Descrição                                              |
-| :------------- | :----------------------------------------------------- |
-| `make run`     | Executa o motor gráfico com resolução padrão (960x540) |
-| `make dev`     | Executa em resolução expandida (1280x720)              |
-| `make install` | Sincroniza dependências via `uv` ou `pip`              |
-| `make test`    | Executa a suíte de testes unitários defensivos         |
-| `make lint`    | Analisa estilo e conformidade do código via Ruff       |
-| `make format`  | Formata Markdown com Prettier e código com Ruff        |
-| `make hooks`   | Configura os ganchos locais do Git (`.githooks/`)      |
-| `make clean`   | Remove caches temporários (`__pycache__`, artefatos)   |
-| `make ci`      | Valida quality gates locais para homologação           |
-
----
-
-## Licenca
-
-Distribuído sob os termos da licença [MIT](LICENSE). Copyright (c) 2026 Gabriel Frigo.
+Distribuído sob os termos da licença especificada no arquivo `LICENSE`.

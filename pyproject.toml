@@ -9,8 +9,11 @@ authors = [{ name = "Gabriel Frigo", email = "gabriel.frigo@outlook.com" }]
 keywords = ["opengl", "moderngl", "glfw", "graphics", "procedural", "gamedev", "shaders"]
 dependencies = [
     "glfw>=2.7.0",
+    "miniaudio>=1.71",
     "moderngl>=5.10.0",
     "numpy>=1.26.0",
+    "pillow>=12.3.0",
+    "pyglm>=2.8.3",
 ]
 
 [project.scripts]
@@ -26,3 +29,8 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.10",
+]

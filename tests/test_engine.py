@@ -1,6 +1,7 @@
 import unittest
-from pyform import __version__
-from pyform.shaders import FRAGMENT_SHADER, VERTEX_SHADER
+
+from game import __version__
+from game.code.graphics.shaders import FRAGMENT_SHADER, VERTEX_SHADER
 from main import parse_args
 
 

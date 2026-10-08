@@ -21,11 +21,16 @@ jobs:
                   version: "latest"
                   enable-cache: true
 
+            - name: Install OpenGL System Libraries
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y libgl1-mesa-dev libegl1-mesa-dev
+
             - name: Set up Python
               run: uv python install 3.12
 
             - name: Install Dependencies
-              run: uv sync --all-groups
+              run: uv sync --all-groups --frozen
 
             - name: Check Python Code Formatting (Ruff)
               run: uv run ruff format --check .

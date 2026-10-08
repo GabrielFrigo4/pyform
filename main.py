@@ -1,6 +1,6 @@
 import argparse
 
-from game.code.core.engine import Engine
+from game.core.engine import Engine
 
 
 def parse_args(args: list[str] | None = None) -> argparse.Namespace:

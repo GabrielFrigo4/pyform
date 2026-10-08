@@ -10,7 +10,7 @@ MAKEFLAGS += --no-print-directory -s
 APP        = pyform
 VERSION   != grep '^version = ' pyproject.toml | cut -d '"' -f 2 2> "/dev/null" || echo 0.1.0
 
-.PHONY: all help run dev install test format prettier ruff-format lint hooks clean ci
+.PHONY: all help run dev install test format prettier ruff-format lint hooks setup-desktop clean ci
 
 all: help
 
@@ -36,6 +36,7 @@ help:
 	cmd "ruff-format"    "Formata código Python com Ruff (organiza imports)"; \
 	cmd "ci"             "Executa pipeline completa de quality gates locais"; \
 	sec "Governança & Manutenção:"; \
+	cmd "setup-desktop"  "Configura ícone XDG, desktop entry e cursor no sistema"; \
 	cmd "hooks"          "Configura e valida os ganchos do Git (.githooks)"; \
 	cmd "clean"          "Remove caches temporários, __pycache__ e artefatos"; \
 	echo ""
@@ -45,14 +46,14 @@ help:
 ### ================================
 run:
 	if command -v uv > "/dev/null" 2>&1; then \
-		uv run python3 main.py; \
+		uv run --no-sync python3 main.py 2> "/dev/null" || python3 main.py; \
 	else \
 		python3 main.py; \
 	fi
 
 dev:
 	if command -v uv > "/dev/null" 2>&1; then \
-		uv run python3 main.py --width 1280 --height 720; \
+		uv run --no-sync python3 main.py --width 1280 --height 720 2> "/dev/null" || python3 main.py --width 1280 --height 720; \
 	else \
 		python3 main.py --width 1280 --height 720; \
 	fi
@@ -72,7 +73,7 @@ install:
 test:
 	echo "🧪 Executando suíte de testes unitários..."
 	if command -v uv > "/dev/null" 2>&1; then \
-		uv run python3 -m unittest discover tests; \
+		uv run --no-sync python3 -m unittest discover tests 2> "/dev/null" || python3 -m unittest discover tests; \
 	else \
 		python3 -m unittest discover tests; \
 	fi
@@ -80,10 +81,10 @@ test:
 
 lint:
 	echo "🔍 Analisando sintaxe e estilo de código..."
-	if command -v uv > "/dev/null" 2>&1; then \
-		uv run ruff check . 2> "/dev/null" || uv run python3 -m compileall -q main.py game tests; \
-	elif command -v ruff > "/dev/null" 2>&1; then \
+	if command -v ruff > "/dev/null" 2>&1; then \
 		ruff check .; \
+	elif command -v uv > "/dev/null" 2>&1; then \
+		uv run --no-sync ruff check . 2> "/dev/null" || python3 -m compileall -q main.py game tests; \
 	else \
 		python3 -m compileall -q main.py game tests; \
 	fi
@@ -102,12 +103,12 @@ prettier:
 
 ruff-format:
 	echo "🎨 Formatando código Python com Ruff..."
-	if command -v uv > "/dev/null" 2>&1; then \
-		uv run ruff check --fix --select I . 2> "/dev/null" || true; \
-		uv run ruff format . 2> "/dev/null" || true; \
-	elif command -v ruff > "/dev/null" 2>&1; then \
+	if command -v ruff > "/dev/null" 2>&1; then \
 		ruff check --fix --select I . 2> "/dev/null" || true; \
 		ruff format . 2> "/dev/null" || true; \
+	elif command -v uv > "/dev/null" 2>&1; then \
+		uv run --no-sync ruff check --fix --select I . 2> "/dev/null" || true; \
+		uv run --no-sync ruff format . 2> "/dev/null" || true; \
 	fi
 
 hooks:
@@ -115,6 +116,11 @@ hooks:
 	chmod 0755 .githooks/pre-commit .githooks/commit-msg 2> "/dev/null" || true
 	git config core.hooksPath .githooks 2> "/dev/null" || true
 	echo "  ✅ core.hooksPath -> .githooks"
+
+setup-desktop:
+	echo "🖥️  Configurando integração XDG e ícone do ModernGL..."
+	sh scripts/moderngl.sh
+	echo "✅ Integração de desktop configurada!"
 
 clean:
 	echo "🧹 Limpando artefatos e caches..."

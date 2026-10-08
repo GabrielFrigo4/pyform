@@ -1,8 +1,12 @@
+import os
 import re
 import unittest
 
 from game import __version__
-from game.code.graphics.shader import load_shader_source
+from game.core.window import DEFAULT_ICON_PATH, _configure_cursor_environment
+from game.graphics.shader import load_shader_source
+from game.scenes.base import Scene
+from game.scenes.sandbox import SandboxScene
 from main import parse_args
 
 VERTEX_SHADER = load_shader_source("default.vert")
@@ -104,6 +108,34 @@ class TestShaderPipelineContract(unittest.TestCase):
             )
 
 
+class TestSceneArchitecture(unittest.TestCase):
+    """Valida o contrato e a estrutura do subsistema de cenas."""
+
+    def test_sandbox_scene_satisfies_protocol(self) -> None:
+        """Verifica se SandboxScene satisfaz em runtime o protocolo Scene."""
+        self.assertTrue(issubclass(SandboxScene, Scene))
+        self.assertTrue(hasattr(SandboxScene, "update"))
+        self.assertTrue(hasattr(SandboxScene, "render"))
+        self.assertTrue(hasattr(SandboxScene, "release"))
+
+
+class TestGraphicsArchitecture(unittest.TestCase):
+    """Valida a integridade do subsistema de malhas e utilitários gráficos."""
+
+    def test_mesh_classes_hierarchy(self) -> None:
+        """Verifica se TriangleMesh e QuadMesh herdam corretamente de Mesh."""
+        from game.graphics import Mesh, QuadMesh, TriangleMesh
+
+        self.assertTrue(issubclass(TriangleMesh, Mesh))
+        self.assertTrue(issubclass(QuadMesh, Mesh))
+
+    def test_diagnostics_callable(self) -> None:
+        """Verifica se a função de log de hardware é executável."""
+        from game.graphics import log_hardware_info
+
+        self.assertTrue(callable(log_hardware_info))
+
+
 class TestEngineSanity(unittest.TestCase):
     """Testes estruturais de CLI e metadados."""
 
@@ -121,6 +153,43 @@ class TestEngineSanity(unittest.TestCase):
         self.assertEqual(args.width, 1280)
         self.assertEqual(args.height, 720)
         self.assertEqual(args.title, "Dev Sandbox")
+
+    def test_default_icon_exists(self) -> None:
+        self.assertTrue(
+            DEFAULT_ICON_PATH.exists(),
+            f"Ícone padrão não encontrado: {DEFAULT_ICON_PATH}",
+        )
+
+
+class TestWindowEnvironment(unittest.TestCase):
+    """Valida o isolamento e configuração defensiva do ambiente gráfico."""
+
+    def test_configure_cursor_environment_sets_defaults(self) -> None:
+        orig_theme = os.environ.get("XCURSOR_THEME")
+        orig_size = os.environ.get("XCURSOR_SIZE")
+
+        try:
+            if "XCURSOR_THEME" in os.environ:
+                del os.environ["XCURSOR_THEME"]
+            if "XCURSOR_SIZE" in os.environ:
+                del os.environ["XCURSOR_SIZE"]
+
+            _configure_cursor_environment()
+
+            self.assertIn("XCURSOR_THEME", os.environ)
+            self.assertIn("XCURSOR_SIZE", os.environ)
+            self.assertTrue(bool(os.environ["XCURSOR_THEME"]))
+            self.assertTrue(os.environ["XCURSOR_SIZE"].isdigit())
+        finally:
+            if orig_theme is not None:
+                os.environ["XCURSOR_THEME"] = orig_theme
+            elif "XCURSOR_THEME" in os.environ:
+                del os.environ["XCURSOR_THEME"]
+
+            if orig_size is not None:
+                os.environ["XCURSOR_SIZE"] = orig_size
+            elif "XCURSOR_SIZE" in os.environ:
+                del os.environ["XCURSOR_SIZE"]
 
 
 if __name__ == "__main__":

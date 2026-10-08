@@ -295,3 +295,39 @@ Para garantir longevidade, idempotência e excelência técnica, toda contribui�
 
 - Todas as funções utilitárias do motor interativo (`Shell`) adotam estritamente a convenção **kebab-case** (`reinstall-shell`, `update-editors`, `update-git`, `open-neovim`).
 - O interpretador `dash` é formalmente descartado como shell interativo por incompatibilidade com essa convenção, focando a experiência do usuário nos shells suportados (`bash`, `zsh` e FreeBSD `/bin/sh`).
+
+---
+
+## 🎮 Princípios de Computação Gráfica do PyForm
+
+### 1. Regra do Aprendizado Ativo & Construção Incremental (O Processo é o Objetivo)
+
+- O **PyForm** existe para que o desenvolvedor aprenda Computação Gráfica de baixo nível de forma tangível, linha por linha.
+- É estritamente proibido criar blocos inteiros de código prontos sem a compreensão e validação ativa do usuário. O resultado final por si só é inútil; o aprendizado reside no processo de entender como vértices, VBOs, VAOs, matrizes e shaders interagem.
+
+### 2. Baixa Abstração Didática & Transparência da GPU
+
+- Projete sem camadas opacas ou frameworks intermediários que mascarem chamadas gráficas.
+- O código deve expor diretamente os conceitos da API ModernGL: buffers de vértice (`VBO`), arrays de atributos (`VAO`), programas de shader (`GLSL 4.20 Core`) e o loop de frames contínuo.
+
+### 3. O Pipeline Programável Moderno & Especialização de Shaders
+
+- **Vertex Shader:** Transformação de coordenadas do _object space_ para o _clip space_ (`gl_Position`).
+- **Fragment Shader (Pixel Shader):** Cálculo analítico de cor por fragmento. Em 2D, é o coração da computação gráfica procedural através de **SDFs (Signed Distance Fields)** desenhados sobre um _quad_, garantindo bordas vetoriais perfeitas com `smoothstep`, além de pós-processamento (bloom, vinheta) e iluminação dinâmica.
+- **Compute Shader (GPGPU puro):** Computação paralela massiva fora da rasterização (`GL_ARB_compute_shader`), executando física e simulações na GPU (100k+ partículas, autômatos celulares como _Game of Life_ e _Falling Sand_) via **SSBOs (Shader Storage Buffer Objects)** com CPU livre.
+- **Geometry & Tessellation Shaders:** Geometry shaders geram ou expandem primitivas dinamicamente na GPU. Tessellation subdivide malhas adaptativamente (usado para curvas de Bézier e superfícies complexas).
+
+### 4. Gerenciamento Estruturado de Memória & UBOs (`std140`)
+
+- **Uniform Buffer Objects (UBOs):** Compartilhamento de dados globais (matrizes MVP, resolução, tempo) entre múltiplos shaders com um único _bind_.
+- **Alinhamento Binário Rigoroso:** Respeito absoluto ao padrão de empacotamento `std140` da GPU, compreendendo alinhamentos de 16 bytes para vetores e matrizes.
+
+### 5. Compilação Binária Offline & SPIR-V
+
+- O ecossistema gráfico moderno converge para bytecode intermediário portátil **SPIR-V (`.spv`)**.
+- Suporte a ferramentas de validação e compilação offline (`glslangValidator`, `glslc`, Slang `slangc`, DirectX Shader Compiler `dxc`), permitindo detectar erros de sintaxe antes do runtime e alcançar tempos de inicialização instantâneos.
+
+### 6. Antifragilidade de Runtime POSIX & Paridade FreeBSD
+
+- Pacotes com extensões C/C++ sem _wheels_ no PyPI para FreeBSD (`moderngl`, `glcontext`, `pyglm`) utilizam binários nativos de sistema fornecidos pelo `pkg`.
+- O ambiente de execução do `uv` opera de forma antifrágil através de `uv venv --system-site-packages .venv` e execução com `uv run --no-sync`, garantindo portabilidade transparente entre FreeBSD, Linux e macOS.

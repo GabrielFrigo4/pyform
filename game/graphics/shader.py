@@ -1,9 +1,10 @@
 from pathlib import Path
+from typing import Any
 
 import moderngl
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-SHADERS_DIR = PROJECT_ROOT / "assets" / "shaders"
+PACKAGE_DIR = Path(__file__).resolve().parents[1]
+SHADERS_DIR = PACKAGE_DIR / "assets" / "shaders"
 
 
 def load_shader_source(file_path: Path | str) -> str:
@@ -39,9 +40,10 @@ class ShaderProgram:
         except moderngl.Error as exc:
             raise RuntimeError(f"Falha na compilação do Shader Program:\n{exc}") from exc
 
-    def use(self) -> None:
-        """Ativa o programa no pipeline (opcional no ModernGL, mas útil para abstrações)."""
-        pass
+    def set_uniform(self, name: str, value: Any) -> None:
+        """Atualiza o valor de uma variável uniforme no shader se ela estiver ativa."""
+        if name in self.program:
+            self.program[name].value = value
 
     def release(self) -> None:
         """Libera os recursos alocados na GPU."""

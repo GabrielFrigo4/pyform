@@ -1,4 +1,9 @@
-import glfw
+from __future__ import annotations
+
+try:
+    import glfw
+except ImportError:
+    glfw = None
 
 from game.graphics.diagnostics import log_hardware_info
 from game.scenes.base import Scene

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import configparser
 import os
 import shutil
@@ -6,9 +8,20 @@ import sys
 from pathlib import Path
 from typing import Any
 
-import glfw
-import moderngl
-from PIL import Image
+try:
+    import glfw
+except ImportError:
+    glfw = None
+
+try:
+    import moderngl
+except ImportError:
+    moderngl = None
+
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
 
 DEFAULT_ICON_PATH = Path(__file__).resolve().parents[1] / "assets" / "icons" / "icon.png"
 MSAA_SAMPLES = 4

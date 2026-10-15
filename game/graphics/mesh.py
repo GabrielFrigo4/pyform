@@ -1,5 +1,14 @@
-import moderngl
-import numpy as np
+from __future__ import annotations
+
+try:
+    import moderngl
+except ImportError:
+    moderngl = None
+
+try:
+    import numpy as np
+except ImportError:
+    np = None
 
 
 class Mesh:

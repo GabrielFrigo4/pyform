@@ -1,4 +1,9 @@
-import moderngl
+from __future__ import annotations
+
+try:
+    import moderngl
+except ImportError:
+    moderngl = None
 
 SEPARATOR_WIDTH = 64
 

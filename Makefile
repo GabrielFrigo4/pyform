@@ -94,11 +94,11 @@ format: prettier ruff-format
 	echo "✅ Formatação concluída!"
 
 prettier:
-	echo "🎨 Formatando documentações Markdown com Prettier..."
-	if command -v npx > "/dev/null" 2>&1; then \
-		npx prettier --write "**/*.md" 2> "/dev/null" || true; \
-	elif command -v prettier > "/dev/null" 2>&1; then \
-		prettier --write "**/*.md" 2> "/dev/null" || true; \
+	echo "🎨 Formatando documentações e configurações com Prettier..."
+	if command -v prettier > "/dev/null" 2>&1; then \
+		prettier --write "**/*.{md,json,yml,yaml}" 2> "/dev/null" || true; \
+	elif command -v npx > "/dev/null" 2>&1; then \
+		npx --yes prettier --write "**/*.{md,json,yml,yaml}" 2> "/dev/null" || true; \
 	fi
 
 ruff-format:

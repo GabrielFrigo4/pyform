@@ -1,12 +1,18 @@
-# Byte-compiled / optimized / DLL files
+# ----------------------------------------------------------------
+# Git Ignore: PyForm
+# ----------------------------------------------------------------
+
+# ================================================================
+# Python Bytecode & Cache
+# ================================================================
 __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
+# ================================================================
+# C Extensions & Build Artefacts
+# ================================================================
 *.so
-
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -26,19 +32,21 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Virtual environments
+# ================================================================
+# Virtual Environments & Package Managers
+# ================================================================
 .env
-.venv
+.venv/
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
-
-# Astral uv
 .uv/
 
-# Unit test / coverage
+# ================================================================
+# Testing & Coverage
+# ================================================================
 htmlcov/
 .tox/
 .nox/
@@ -54,7 +62,9 @@ coverage.xml
 .ruff_cache/
 cover/
 
-# IDE & OS metadata
+# ================================================================
+# Operating System & Editor Artefacts
+# ================================================================
 .DS_Store
 Thumbs.db
 *.swp

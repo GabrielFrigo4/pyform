@@ -119,15 +119,16 @@ hooks:
 
 setup-desktop:
 	echo "🖥️  Configurando integração XDG e ícone do ModernGL..."
-	sh scripts/moderngl.sh
+	sh .scripts/moderngl.sh
 	echo "✅ Integração de desktop configurada!"
 
 clean:
-	echo "🧹 Limpando artefatos e caches..."
+	echo "🧹 Limpando artefatos, caches e ambientes virtuais..."
+	rm -rf .venv dist build .eggs *.egg-info .coverage htmlcov
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2> "/dev/null" || true
 	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2> "/dev/null" || true
 	find . -type d -name ".ruff_cache" -exec rm -rf {} + 2> "/dev/null" || true
-	rm -rf dist build .eggs *.egg-info .coverage htmlcov
+	find . -type d -name ".mypy_cache" -exec rm -rf {} + 2> "/dev/null" || true
 	echo "✅ Limpeza concluída!"
 
 ci: test lint

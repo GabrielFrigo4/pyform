@@ -1,1 +1,0 @@
-scripts/moderngl.sh

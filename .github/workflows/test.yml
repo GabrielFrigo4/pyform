@@ -1,0 +1,49 @@
+name: Tests
+
+on:
+    push:
+        branches: [main, master]
+    pull_request:
+        branches: [main, master]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+    test:
+        name: 🧪 Ruff & Unit Tests
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v7
+
+            - name: Install Astral uv
+              uses: astral-sh/setup-uv@v5
+              with:
+                  version: "latest"
+                  enable-cache: true
+
+            - name: Install OpenGL System Libraries
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y libgl1-mesa-dev libegl1-mesa-dev
+
+            - name: Set up Python
+              run: uv python install 3.12
+
+            - name: Install Dependencies
+              run: uv sync --all-groups --frozen
+
+            - name: Check Python Code Formatting (Ruff)
+              run: uv run ruff format --check .
+
+            - name: Lint Python Code (Ruff)
+              run: uv run ruff check .
+
+            - name: Run Unit Tests
+              run: uv run python -m unittest discover -s tests -p "test_*.py"
